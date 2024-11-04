@@ -3,22 +3,22 @@ from discord.ext import commands
 from discord import Intents
 from dotenv import load_dotenv
 import os
-import yt_dlp  # Use yt-dlp for downloading audio
+import yt_dlp
 
-# Load the token from .env file
+
 load_dotenv()
 TOKEN = os.getenv("DISCORD_TOKEN")
 
-# Create an instance of Intents
+
 intents = Intents.default()
 intents.messages = True
 intents.members = True
 intents.message_content = True
 
-# Initialize the bot with a command prefix and intents
+
 bot = commands.Bot(command_prefix="!", intents=intents)
 
-# Set up yt-dlp options for downloading audio
+
 yt_dlp.utils.bug_reports_message = lambda: ''
 ytdl_format_options = {
     'format': 'bestaudio/best',
@@ -37,13 +37,12 @@ ffmpeg_options = {
 }
 
 ytdl = yt_dlp.YoutubeDL(ytdl_format_options)
-volume_level = 0.5  # Default volume (50%)
-last_played = None  # Store the last played song information
+volume_level = 0.5 
+last_played = None
 
 @bot.event
 async def on_ready():
     print(f"{bot.user} has connected to Discord!")
-    # Set the bot's status to listening
     await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name="!commands to view current commands"))
 
 @bot.command()
@@ -89,25 +88,25 @@ async def leave(ctx):
 @bot.command()
 async def play(ctx, url: str):
     """Play a song from a YouTube URL."""
-    global volume_level, last_played  # Access the volume level and last played song
+    global volume_level, last_played  
 
-    # Check if the bot is in a voice channel
+    
     voice_client = ctx.guild.voice_client
     if voice_client is None or not voice_client.is_connected():
         await ctx.send("I'm not connected to a voice channel. Use `!join` to bring me in first.")
         return
 
-    # Stop any currently playing audio
+    
     if voice_client.is_playing():
         voice_client.stop()
 
-    # Download audio from YouTube
+    
     async with ctx.typing():
         info = ytdl.extract_info(url, download=False)
         audio_url = info['url']
-        last_played = (audio_url, info['title'])  # Store the last played song info
+        last_played = (audio_url, info['title'])  
 
-    # Play the audio with volume control
+    
     audio_source = discord.FFmpegPCMAudio(audio_url, **ffmpeg_options)
     voice_client.play(discord.PCMVolumeTransformer(audio_source, volume=volume_level))
     await ctx.send(f"Now playing: {info['title']}")
@@ -115,14 +114,14 @@ async def play(ctx, url: str):
 @bot.command()
 async def replay(ctx):
     """Replay the last played song."""
-    global last_played  # Access the last played song info
+    global last_played  
 
     if last_played is None:
         await ctx.send("No song has been played yet.")
         return
 
     url, title = last_played
-    await play(ctx, url)  # Call the play command with the last played URL
+    await play(ctx, url)
 
 @bot.command()
 async def volume(ctx, volume: int):
@@ -134,7 +133,7 @@ async def volume(ctx, volume: int):
         await ctx.send("Please provide a volume between 0 and 100.")
         return
 
-    # Adjust the volume level
+    
     volume_level = volume / 100.0
     if voice_client and voice_client.source:
         voice_client.source.volume = volume_level
@@ -161,5 +160,5 @@ async def resume(ctx):
     else:
         await ctx.send('The song is not paused.')
 
-# Run the bot
+
 bot.run(TOKEN)
