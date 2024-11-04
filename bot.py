@@ -6,20 +6,20 @@ import os
 import yt_dlp
 import random
 
-# Load the token from .env file
+
 load_dotenv()
 TOKEN = os.getenv("DISCORD_TOKEN")
 
-# Create an instance of Intents
+
 intents = Intents.default()
 intents.messages = True
 intents.members = True
 intents.message_content = True
 
-# Initialize the bot with a command prefix and intents
+
 bot = commands.Bot(command_prefix="!", intents=intents)
 
-# Set up yt-dlp options for downloading audio
+
 yt_dlp.utils.bug_reports_message = lambda: ''
 ytdl_format_options = {
     'format': 'bestaudio/best',
@@ -38,9 +38,9 @@ ffmpeg_options = {
 }
 
 ytdl = yt_dlp.YoutubeDL(ytdl_format_options)
-volume_level = 0.5  # Default volume (50%)
+volume_level = 0.5  
 last_played = None
-song_queue = []  # Initialize a list to hold the song queue
+song_queue = []  
 
 @bot.event
 async def on_ready():
@@ -102,14 +102,14 @@ async def play(ctx, url: str):
         await ctx.send("I'm not connected to a voice channel. Use `!join` to bring me in first.")
         return
 
-    # Download audio from YouTube
+    
     async with ctx.typing():
         info = ytdl.extract_info(url, download=False)
         audio_url = info['url']
-        last_played = (audio_url, info['title'])  # Save the last played song
-        song_queue.append((audio_url, info['title']))  # Add to the queue
+        last_played = (audio_url, info['title'])  
+        song_queue.append((audio_url, info['title']))  
 
-    # If no song is currently playing, start playing the first song in the queue
+    
     if not voice_client.is_playing():
         await play_next(ctx)
 
@@ -121,7 +121,7 @@ async def play_next(ctx):
     voice_client = ctx.guild.voice_client
 
     if len(song_queue) > 0:
-        audio_url, title = song_queue.pop(0)  # Get the next song
+        audio_url, title = song_queue.pop(0)  
         audio_source = discord.FFmpegPCMAudio(audio_url, **ffmpeg_options)
         voice_client.play(discord.PCMVolumeTransformer(audio_source, volume=volume_level), after=lambda e: bot.loop.create_task(play_next(ctx)))
         await ctx.send(f"Now playing: {title}")
@@ -145,9 +145,9 @@ async def skip(ctx):
     """Skip the currently playing song."""
     voice_client = ctx.voice_client
     if voice_client and voice_client.is_playing():
-        voice_client.stop()  # Stop the current song
+        voice_client.stop()  
         await ctx.send("Skipped the current song.")
-        await play_next(ctx)  # Play the next song in the queue
+        await play_next(ctx)  
     else:
         await ctx.send("There is no song currently playing.")
 
@@ -161,7 +161,7 @@ async def volume(ctx, volume: int):
         await ctx.send("Please provide a volume between 0 and 100.")
         return
 
-    # Adjust the volume level
+    
     volume_level = volume / 100.0
     if voice_client and voice_client.source:
         voice_client.source.volume = volume_level
@@ -212,7 +212,7 @@ async def remove(ctx, index: int):
     """Remove a song from the queue by its index (1-based)."""
     global song_queue
     if 0 < index <= len(song_queue):
-        removed_song = song_queue.pop(index - 1)  # Convert to 0-based index
+        removed_song = song_queue.pop(index - 1)  
         await ctx.send(f"Removed from queue: {removed_song[1]}")
     else:
         await ctx.send("Invalid index. Please provide a valid index.")
@@ -227,5 +227,5 @@ async def shuffle(ctx):
         random.shuffle(song_queue)
         await ctx.send("Shuffled the song queue.")
 
-# Run the bot
+
 bot.run(TOKEN)
