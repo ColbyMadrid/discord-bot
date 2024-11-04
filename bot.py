@@ -104,17 +104,38 @@ async def play(ctx, url: str):
         await ctx.send("I'm not connected to a voice channel. Use `!join` to bring me in first.")
         return
 
+   
     async with ctx.typing():
         info = ytdl.extract_info(url, download=False)
         audio_url = info['url']
         title = info['title']  
-        last_played = (audio_url, title)  
+        last_played = (audio_url, title)
+
+        
+        queue_was_empty = len(song_queue) == 0
         song_queue.append((audio_url, title))  
 
-    if not voice_client.is_playing():
+   
+    if queue_was_empty and not voice_client.is_playing():
         await play_next(ctx)
+    else:
+        await ctx.send(f"Added to queue: {title}")
 
-    await ctx.send(f"Added to queue: {title}")
+async def play_next(ctx):
+    """Play the next song in the queue."""
+    global song_queue
+    voice_client = ctx.guild.voice_client
+
+    if len(song_queue) > 0:
+        audio_url, title = song_queue.pop(0)
+        audio_source = discord.FFmpegPCMAudio(audio_url, **ffmpeg_options)
+        voice_client.play(
+            discord.PCMVolumeTransformer(audio_source, volume=volume_level),
+            after=lambda e: bot.loop.create_task(play_next(ctx))
+        )
+        await ctx.send(f"Now playing: {title}")
+    else:
+        await ctx.send("The queue is empty!")
 
 async def play_next(ctx):
     """Play the next song in the queue."""
