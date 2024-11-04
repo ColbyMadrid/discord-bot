@@ -7,15 +7,17 @@ import yt_dlp
 import random
 
 
+
 load_dotenv()
 TOKEN = os.getenv("DISCORD_TOKEN")
+
+
 
 
 intents = Intents.default()
 intents.messages = True
 intents.members = True
 intents.message_content = True
-
 
 bot = commands.Bot(command_prefix="!", intents=intents)
 
@@ -102,18 +104,17 @@ async def play(ctx, url: str):
         await ctx.send("I'm not connected to a voice channel. Use `!join` to bring me in first.")
         return
 
-    
     async with ctx.typing():
         info = ytdl.extract_info(url, download=False)
         audio_url = info['url']
-        last_played = (audio_url, info['title'])  
-        song_queue.append((audio_url, info['title']))  
+        title = info['title']  
+        last_played = (audio_url, title)  
+        song_queue.append((audio_url, title))  
 
-    
     if not voice_client.is_playing():
         await play_next(ctx)
 
-    await ctx.send(f"Added to queue: {info['title']}")
+    await ctx.send(f"Added to queue: {title}")
 
 async def play_next(ctx):
     """Play the next song in the queue."""
@@ -121,12 +122,10 @@ async def play_next(ctx):
     voice_client = ctx.guild.voice_client
 
     if len(song_queue) > 0:
-        audio_url, title = song_queue.pop(0)  
+        audio_url, title = song_queue.pop(0)
         audio_source = discord.FFmpegPCMAudio(audio_url, **ffmpeg_options)
         voice_client.play(discord.PCMVolumeTransformer(audio_source, volume=volume_level), after=lambda e: bot.loop.create_task(play_next(ctx)))
         await ctx.send(f"Now playing: {title}")
-    else:
-        await ctx.send("The queue is empty!")
 
 @bot.command()
 async def replay(ctx):
@@ -139,15 +138,16 @@ async def replay(ctx):
 
     url, title = last_played
     await play(ctx, url)
+    await ctx.send(f"Now replaying: {title}")
 
 @bot.command()
 async def skip(ctx):
     """Skip the currently playing song."""
     voice_client = ctx.voice_client
     if voice_client and voice_client.is_playing():
-        voice_client.stop()  
+        voice_client.stop()
         await ctx.send("Skipped the current song.")
-        await play_next(ctx)  
+        await play_next(ctx)
     else:
         await ctx.send("There is no song currently playing.")
 
@@ -161,7 +161,6 @@ async def volume(ctx, volume: int):
         await ctx.send("Please provide a volume between 0 and 100.")
         return
 
-    
     volume_level = volume / 100.0
     if voice_client and voice_client.source:
         voice_client.source.volume = volume_level
