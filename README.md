@@ -5,7 +5,7 @@ Zyrix is a powerful and versatile Discord bot built for playing music directly i
 
   ## Features
 
-  - 🎶 Play Music from YouTube links.
+  - 🎶 Play Music from YouTube.
 
   - 📜 Queue Management for viewing, adding, and organizing songs.
 
@@ -20,21 +20,23 @@ Zyrix is a powerful and versatile Discord bot built for playing music directly i
   - ✅ Easy to set up and fully customizable.
 
 ## Commands
-| Command          | Description                                              |
-|------------------|----------------------------------------------------------|
-| `!join`          | Make the bot join your current voice channel             |
-| `!leave`         | Disconnect the bot from the voice channel                |
-| `!play <url>`    | Play audio from a YouTube link                           |
-| `!pause`         | Pause the current song                                   |
-| `!resume`        | Resume the paused song                                   |
-| `!skip`          | Skip to the next song in the queue                       |
-| `!volume <0-100>`| Set the volume level (default is 50%)                    |
-| `!queue`         | View the current song queue                              |
-| `!replay`        | Replay the last played song                              |
-| `!shuffle`       | Shuffle the current queue                                |
-| `!clear`         | Clear all songs from the queue                           |
-| `!remove <index>`| Remove a specific song from the queue by its position    |
-| `!commands`      | Display the list of available commands                   |
+
+| Command            | Description                                                        |
+|--------------------|--------------------------------------------------------------------|
+| `!join`            | Make the bot join your current voice channel.                      |
+| `!leave`           | Disconnect the bot from the voice channel.                         |
+| `!play <url/term>`      | Play audio from a YouTube URL or search term.                      |
+| `!pause`           | Pause the current song.                                            |
+| `!resume`          | Resume the paused song.                                            |
+| `!skip`            | Skip to the next song in the queue.                                |
+| `!volume <0-100>`  | Set the volume level (default is 50%).                             |
+| `!queue`           | View the current song queue.                                       |
+| `!replay`          | Replay the last played song.                                       |
+| `!shuffle`         | Shuffle the current queue.                                         |
+| `!clear`           | Clear all songs from the queue. If the queue is empty, shows a message saying "The queue is currently empty." |
+| `!remove <index>`  | Remove a specific song from the queue by its position (1-based index). |
+| `!commands`        | Display the list of available commands.                            |
+
 
 
 ## Installation
