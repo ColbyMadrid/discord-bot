@@ -5,7 +5,6 @@ from dotenv import load_dotenv
 import os
 import yt_dlp
 import random
-import asyncio
 import re
 import logging
 
@@ -51,6 +50,11 @@ async def on_ready():
     logging.info(f"{bot.user} has connected to Discord!")
     await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name="!commands"))
 
+
+
+
+
+# Commands command
 @bot.command()
 async def commands(ctx):
     command_list = """
@@ -71,6 +75,12 @@ async def commands(ctx):
     """
     await ctx.send(command_list)
 
+
+
+
+
+
+# Join command
 @bot.command()
 async def join(ctx):
     if ctx.author.voice:
@@ -85,6 +95,12 @@ async def join(ctx):
     else:
         await ctx.send('You need to be in a voice channel to use this command.')
 
+
+
+
+
+
+# Leave command
 @bot.command()
 async def leave(ctx):
     if ctx.voice_client:
@@ -93,6 +109,12 @@ async def leave(ctx):
     else:
         await ctx.send('I am not connected to a voice channel.')
 
+
+
+
+
+
+# Play command
 @bot.command()
 async def play(ctx, *, query: str = None, send_message: bool = True):
     """Play a song from a YouTube URL or search term."""
@@ -144,6 +166,12 @@ async def play(ctx, *, query: str = None, send_message: bool = True):
             await ctx.send("There was an error processing your request. Please check the URL or search term and try again.")
             print(f"Error in play command: {e}")
 
+
+
+
+
+
+# Play Next command
 async def play_next(ctx, send_message: bool = True):
     global song_queue
     voice_client = ctx.guild.voice_client
@@ -170,6 +198,11 @@ async def play_next(ctx, send_message: bool = True):
         await ctx.send("The queue is empty!")
 
 
+
+
+
+
+# Replay command
 @bot.command()
 async def replay(ctx):
     """Replay the last played song."""
@@ -197,6 +230,12 @@ async def skip(ctx):
     else:
         await ctx.send("There are no songs currently playing.")
 
+
+
+
+
+
+# Volume command
 @bot.command()
 async def volume(ctx, volume: int):
     global volume_level
@@ -212,6 +251,12 @@ async def volume(ctx, volume: int):
 
     await ctx.send(f"Volume set to {volume} %.")
 
+
+
+
+
+
+# Pause command
 @bot.command()
 async def pause(ctx):
     voice_client = ctx.voice_client
@@ -221,6 +266,12 @@ async def pause(ctx):
     else:
         await ctx.send('There is no song currently playing.')
 
+
+
+
+
+
+# Resume command
 @bot.command()
 async def resume(ctx):
     voice_client = ctx.voice_client
@@ -232,6 +283,12 @@ async def resume(ctx):
     else:
         await ctx.send('The song is not paused.')
 
+
+
+
+
+
+# Queue command
 @bot.command()
 async def queue(ctx):
     if song_queue:
@@ -240,6 +297,12 @@ async def queue(ctx):
     else:
         await ctx.send("The queue is empty.")
 
+
+
+
+
+
+# Clear command
 @bot.command()
 async def clear(ctx):
     global song_queue
@@ -250,6 +313,12 @@ async def clear(ctx):
         song_queue.clear()
         await ctx.send("Cleared the song queue.")
 
+
+
+
+
+
+# Remove command
 @bot.command()
 async def remove(ctx, index: int):
     global song_queue
@@ -259,6 +328,12 @@ async def remove(ctx, index: int):
     except IndexError:
         await ctx.send("Invalid index. Please try again.")
 
+
+
+
+
+
+# Shuffle command
 @bot.command()
 async def shuffle(ctx):
     """Shuffle the song queue."""
